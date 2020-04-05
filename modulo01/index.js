@@ -81,7 +81,7 @@ server.post('/usuarios' , (req , res) => {
 
 /*
 
-Edit user
+Edit user: PUT ( Método de alteração)
 
 */
 
@@ -89,7 +89,25 @@ server.put('/usuarios/:index' , (req , res) => {
 
   const { novousuario } = req.body;
   const { index } = req.params;
-  usuarios.push(novousuario[index]);
+
+  //Sobrepondo o usuario que estava na posicao index
+  usuarios[index] = novousuario;
+
+  return res.json(usuarios);
+})
+
+
+/*
+
+DELETE user: 
+
+*/
+
+server.delete('/usuarios/:index' , (req , res) => {
+
+  const { index } = req.params;
+  // SPLICE: Percorre o vetor ate a posição index ( 1 param ) e apaga uma posição ( 2 param )
+  usuarios.splice(index , 1);
 
   return res.json(usuarios);
 })
