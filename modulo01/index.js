@@ -6,6 +6,36 @@ server.use(express.json());
 
 /*
 
+Middleware global: Que funciona independente de rotas; No caso, o parametro next
+é utilizado para que o middleware não interrompa o fluxo da aplicação
+
+*/
+
+server.use((req , res , next) => {
+  console.log(`Método utilizado: ${req.method}; URL: ${req.url}`);
+  return next();
+} )
+
+/* 
+
+Middleware que checa a existencia da chave/valor "name" dentro do corpo da requisição
+
+*/
+
+function CheckUserExist(req , res , next){
+
+  if( !req.body.name) {
+    return res.status(400).json({ error: 'User name is required! Skirl'})
+
+  }
+
+  return next();
+
+}
+
+
+/*
+
 Metodo get HTTP para a URL "./teste"
 
 */
@@ -71,10 +101,10 @@ Create user
 
 */
 
-server.post('/usuarios' , (req , res) => {
+server.post('/usuarios' , CheckUserExist ,(req , res) => {
 
-  const { novousuario } = req.body;
-  usuarios.push(novousuario);
+  const { name } = req.body;
+  usuarios.push(name);
 
   return res.json(usuarios);
 })
@@ -85,13 +115,13 @@ Edit user: PUT ( Método de alteração)
 
 */
 
-server.put('/usuarios/:index' , (req , res) => {
+server.put('/usuarios/:index' , CheckUserExist , (req , res) => {
 
-  const { novousuario } = req.body;
+  const { name } = req.body;
   const { index } = req.params;
 
   //Sobrepondo o usuario que estava na posicao index
-  usuarios[index] = novousuario;
+  usuarios[index] = name;
 
   return res.json(usuarios);
 })
@@ -103,7 +133,7 @@ DELETE user:
 
 */
 
-server.delete('/usuarios/:index' , (req , res) => {
+server.delete('/usuarios/:index', (req , res) => {
 
   const { index } = req.params;
   // SPLICE: Percorre o vetor ate a posição index ( 1 param ) e apaga uma posição ( 2 param )
